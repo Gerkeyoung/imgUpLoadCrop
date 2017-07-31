@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>标签生成服务</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/cropper.min.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/cropper.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+<div class="container-fluid main">
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        图片裁剪
+                    </h4>
+                </div>
+                <div class="modal-body" id="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="getCopeData()">
+                        确定
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+    <div class="img-list">
+    </div>
+    <button class="btn btn-primary btn-lg upload-hook">
+        选择图片
+    </button>
+    <button class="btn btn-primary btn-lg" data-toggle="modal" onclick="opeImgModel()">
+        裁剪
+    </button>
+    <button class="btn btn-primary btn-lg" onclick="uploadImg()">
+        上传图片
+    </button>
+    <form>
+        <input type="file" id="file-hook" onchange='PreviewImage(this)' style="display: none" />
+    </form>
+</div>
+<script>
+    $(document).ready(
+        function () {
+            $('.upload-hook').click(function(){
+                $("#file-hook").click();
+            });
+        }
+    );
+    var base64 = '';
+    function PreviewImage(imgFile){
+        $('#file-hook').replaceWith("<input type='file' id='file-hook' onchange='PreviewImage(this)' style='display: none' />");
+        $(".img-list").empty();
+        base64 = null;
+        base64 = new Base64('id','modal-body',imgFile,'img-list', 400, 400);
+    };
+    function opeImgModel() {
+        if(base64){
+            $('#myModal').on('shown.bs.modal', function () {
+                base64.corpImg();
+            })
+            $('#myModal').modal();
+        }else{
+            alert('实例化图片插件失败!')
+        };
+    };
+    // 获取裁剪结果
+    function getCopeData() {
+        if(base64){
+            base64.getCoprDataUrl(function (id,data) {
+               var Imgwidth = $("#"+id).width();
+                var Imgheight = $("#"+id).height();
+                $(".img-list").empty().append("<img id='"+id+"' src='"+data+"' width='"+Imgwidth+"' height='"+Imgheight+"'/>");
+                $('#myModal').modal('hide');
+            })
+        }else{
+            alert('实例化图片插件失败!')
+        }
+    }
+     // 上传图片
+    function uploadImg() {
+        if(base64){
+            base64.uploaImgFile(function () {
+                
+            },function () {
+                alert("loading")
+            },function () {
+                alert("success")
+            },function () {
+                alert("error");
+            })
+        }else{
+            alert('实例化图片插件失败!')
+        }
+
+    };
+</script>
+</body>
+<script src="js/uploadImg.js"></script>
+
+</html>
